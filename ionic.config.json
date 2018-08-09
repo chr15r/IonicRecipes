@@ -1,0 +1,7 @@
+{
+  "name": "IonicRecipes",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
