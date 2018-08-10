@@ -2,9 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import {
   NavParams,
   ActionSheetController,
-  AlertController
+  AlertController,
+  ToastController,
+  NavController
 } from "ionic-angular";
 import { FormGroup, FormControl, Validators, FormArray } from "@angular/forms";
+import { RecipesService } from "../../services/recipes.service";
 
 @Component({
   selector: "page-edit-recipe",
@@ -18,7 +21,10 @@ export class EditRecipePage implements OnInit {
   constructor(
     private navParams: NavParams,
     private actionSheetController: ActionSheetController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private recipesService: RecipesService,
+    private navController: NavController
   ) {}
 
   ngOnInit() {
@@ -28,15 +34,30 @@ export class EditRecipePage implements OnInit {
 
   private initializeForm() {
     this.recipeForm = new FormGroup({
-      'title': new FormControl(null, Validators.required),
-      'description': new FormControl(null, Validators.required),
-      'difficulty': new FormControl("Medium", Validators.required),
-      'ingredients': new FormArray([])
+      title: new FormControl(null, Validators.required),
+      description: new FormControl(null, Validators.required),
+      difficulty: new FormControl("Medium", Validators.required),
+      ingredients: new FormArray([])
     });
   }
 
   onSubmit() {
-    console.log(this.recipeForm);
+    console.log('submitting');
+    const value = this.recipeForm.value;
+    let ingredients = [];
+    if (value.ingredients.length > 0) {
+      ingredients = value.ingredients.map(name => {
+        return { name: name, amount: 1 };
+      })
+    }
+    this.recipesService.addRecipe(
+      value.title,
+      value.description,
+      value.difficulty,
+      ingredients
+    );
+    this.recipeForm.reset();
+    this.navController.popToRoot();
   }
 
   onManageIngredients() {
@@ -53,12 +74,15 @@ export class EditRecipePage implements OnInit {
           text: "Remove all Ingredients",
           role: "destructive",
           handler: () => {
-            const fArray: FormArray = <FormArray>this.recipeForm.get('ingredients');            
+            const fArray: FormArray = <FormArray>(
+              this.recipeForm.get("ingredients")
+            );
             const len = fArray.length;
             if (len > 0) {
-              for (let i = len-1; i >=0; i--) {
+              for (let i = len - 1; i >= 0; i--) {
                 fArray.removeAt(i);
               }
+              this.getToast("Items removed").present();
             }
           }
         },
@@ -76,25 +100,37 @@ export class EditRecipePage implements OnInit {
       title: "Add Ingredient",
       inputs: [
         {
-          name: 'name',
-          placeholder: 'Name'
+          name: "name",
+          placeholder: "Name"
         }
       ],
       buttons: [
         {
-          text: 'Cancel',
-          role: 'cancel'
+          text: "Cancel",
+          role: "cancel"
         },
         {
-          text: 'Add',
+          text: "Add",
           handler: data => {
-            if (data.name.trim() == '' || data.name == null){
-              return;
+            if (data.name.trim() == "" || data.name == null) {
+              this.getToast("Please enter a valid value").present();
+            } else {
+              (<FormArray>this.recipeForm.get("ingredients")).push(
+                new FormControl(data.name, Validators.required)
+              );
+              this.getToast("Item Added").present();
             }
-            (<FormArray>this.recipeForm.get('ingredients')).push(new FormControl(data.name, Validators.required));
           }
         }
       ]
+    });
+  }
+
+  getToast(_message: string) {
+    return this.toastController.create({
+      message: _message,
+      duration: 1500,
+      position: "bottom"
     });
   }
 }
