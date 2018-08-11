@@ -29,7 +29,7 @@ export class SignupPage {
         const alert = this.alertCtrl.create({
           title: "Signup failed!",
           message: error.message,
-          buttons: ['OK']
+          buttons: ['Ok']
         });
         alert.present();
       });
