@@ -7,8 +7,8 @@ import { map } from "rxjs/operators";
 @Injectable()
 export class ShoppingListService {
   private ingredients: Ingredient[] = [];
-   
-  constructor(private http: HttpClient, private authService: AuthService) { }
+
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   addItem(name: string, amount: number) {
     this.ingredients.push(new Ingredient(name, amount));
@@ -29,16 +29,27 @@ export class ShoppingListService {
 
   storeList(token: string) {
     const userId = this.authService.getActiveUser().uid;
-    const httpUrl = "https://ionic2-recipebook-5e0a3.firebaseio.com/" + userId + "/shopping-list.json";
-    return this.http.put(httpUrl + "?auth=" + token, this.ingredients);
+    const httpUrl =
+      "https://ionic2-recipebook-5e0a3.firebaseio.com/" +
+      userId +
+      "/shopping-list.json" +
+      "?auth=" +
+      token;
+    return this.http.put(httpUrl, this.ingredients);
   }
 
   fetchList(token: string) {
     const userId = this.authService.getActiveUser().uid;
-    const httpUrl = "https://ionic2-recipebook-5e0a3.firebaseio.com/" + userId + "/shopping-list.json";
-    return this.http.get(httpUrl + "?auth=" + token).pipe(
-      map((data: any) => {
+    const httpUrl =
+      "https://ionic2-recipebook-5e0a3.firebaseio.com/" +
+      userId +
+      "/shopping-list.json" +
+      "?auth=" +
+      token;
+    return this.http.get<Ingredient[]>(httpUrl).pipe(
+      map(data => {
         this.ingredients = data;
+        return data;
       })
     );
   }
