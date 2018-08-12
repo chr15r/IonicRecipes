@@ -39,7 +39,11 @@ export class ShoppingListService {
     const httpUrl = this.fireBaseUrl + userId + "/shopping-list.json?auth=" + token;
     return this.http.get<Ingredient[]>(httpUrl).pipe(
       map(data => {
-        this.ingredients = data;
+        if(data) {
+          this.ingredients = data;
+        } else {
+          this.ingredients = [];
+        }        
         return data;
       })
     );

@@ -7,8 +7,8 @@ import {
   LoadingController,
   AlertController
 } from "ionic-angular";
-import { SLOptionsPage } from "./sl-options/sl-options";
 import { AuthService } from "../../services/auth.service";
+import { PopoverPage } from "../popover/popover";
 
 @Component({
   selector: "page-shopping-list",
@@ -53,11 +53,12 @@ export class ShoppingListPage {
       content: "Please wait..."
     });
 
-    const popover = this.popOverCtrl.create(SLOptionsPage);
+    const popover = this.popOverCtrl.create(PopoverPage);
     popover.present({ ev: event }); // Show popover where mouse is placed from MouseEvent
     popover.onDidDismiss(data => {
-      loading.present();
-      if (data.action == "load") {
+
+      if (data != null && data.action == "load") {
+        loading.present();
         this.authService
           .getActiveUser()
           .getIdToken()
@@ -73,11 +74,11 @@ export class ShoppingListPage {
               },
               error => {
                 loading.dismiss();
-                this.handleError(error.message);
+                this.handleError(error.error);
               }
             );
           });
-      } else if (data.action == "store") {
+      } else if (data != null && data.action == "store") {
         loading.present();
         this.authService
           .getActiveUser()
@@ -87,7 +88,7 @@ export class ShoppingListPage {
               () => loading.dismiss(),
               error => {
                 loading.dismiss();
-                this.handleError(error.message);
+                this.handleError(error.error);
               }
             );
           });

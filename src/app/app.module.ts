@@ -17,6 +17,7 @@ import { SignupPage } from '../pages/signup/signup';
 import { AuthService } from '../services/auth.service';
 import { SLOptionsPage } from '../pages/shopping-list/sl-options/sl-options';
 import { HttpClientModule } from '@angular/common/http';
+import { PopoverPage } from '../pages/popover/popover';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { HttpClientModule } from '@angular/common/http';
     TabsPage,
     SigninPage,
     SignupPage,
-    SLOptionsPage
+    SLOptionsPage,
+    PopoverPage
   ],
   imports: [
     BrowserModule,
@@ -45,7 +47,8 @@ import { HttpClientModule } from '@angular/common/http';
     TabsPage,
     SigninPage,
     SignupPage,
-    SLOptionsPage
+    SLOptionsPage,
+    PopoverPage
   ],
   providers: [
     StatusBar,
